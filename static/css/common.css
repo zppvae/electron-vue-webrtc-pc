@@ -1,0 +1,34 @@
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  /* font-size: 100%; */
+  vertical-align: baseline;
+  background: transparent;
+  list-style: none;
+  font-family: '微软雅黑';
+  font-weight: normal;
+}
+.pull-left{
+  float: left;
+}
+.pull-right{
+  float: right;
+}
+.clear-both{
+  clear: both;
+}
+.green{
+  color: #08a908;
+}
+.red{
+  color: red;
+}
+/* 自定义$message 的样式 */
+.messagebox{
+  background: #0000006b;
+  color: #f2f2f2;
+  border: 1px solid #e0e0e0;
+  min-width: 200px;
+}
