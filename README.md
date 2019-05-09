@@ -1,6 +1,6 @@
-# electron-vue-webrtc
+# svoc
 
-> An electron-vue webrtc
+> an webrtc project
 
 #### Build Setup
 

@@ -9,7 +9,7 @@
           v-model="serverForm.serverAddr"
           clearable>
         </el-input>
-        <span v-show="false">{{serverAddr}}</span>  
+        <span v-show="false">{{serverAddr}}</span>
         </el-form-item>
         <el-form-item>
           <div class="save-server">
@@ -64,7 +64,7 @@ export default {
           // 设置成功后返回到index
           this.$router.push("/index");
         }else{
-          this.Hint('服务器地址设置失败', 'error');
+          this.$notification('服务器地址设置失败', '不是一个有效的地址')
         }
       })
     }
@@ -72,7 +72,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
   .serverPage{
     margin-top: 20px;
   }

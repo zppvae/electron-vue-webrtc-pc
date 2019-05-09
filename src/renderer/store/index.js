@@ -2,24 +2,26 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { xmpp } from '../util/xmpp.js'
-import devicesInfo from './modules/devicesInfo'
+import { common } from '../util/common.js'
 import { environment } from '../config/environment';
+import devicesInfo from './modules/devicesInfo'
+import userCookies from './modules/userCookies'
 Vue.use(Vuex);
 
 
 //要设置的全局访问的state对象
 const state={
   // 登录状态
-  isLoggedIn: $cookies.isKey('uc_isLogin') && $cookies.isKey('uc_access_token'),
+  isLoggedIn: JSON.parse(localStorage.getItem('uc_isLogin')) && JSON.parse(localStorage.getItem('uc_access_token')), //$cookies.isKey('uc_isLogin') && $cookies.isKey('uc_access_token'),
   // 登录用户的信息
   loginData: JSON.parse(localStorage.getItem('uc_loginData')),
   // xmpp账号信息
-  xmppCookieData: $cookies.get('xmppCookieData'),
+  xmppCookieData: {},//$cookies.get('xmppCookieData'),
   // 服务地址
   serverAddress: environment.apiBase, //process.env.VUE_APP_BASE_URL, // 'https://pre.svocloud.com',
   // 呼叫速率
   resolution: '256',
-  
+
   localVolume: 1,
   // 会议信息
   conferences: {},
@@ -57,7 +59,7 @@ const getters = {
   getParticipantsData(state) {
     return state.participants;
   },
-  
+
   getLocalVolume(state) {
     return state.localVolume;
   },
@@ -90,7 +92,7 @@ const mutations = {
   setResolution(state, value) {
     state.resolution = value;
   },
-  
+
   setLocalVolume(state, value) {
     state.localVolume = value;
   },
@@ -118,7 +120,7 @@ const actions = {
   asyncXmppData(context, data) {
     context.commit('setXmppData', data);
   },
-  
+
   asyncConferenceData(context, data) {
     context.commit('setConferencesData', data);
   },
@@ -133,7 +135,8 @@ const actions = {
 
 const store = new Vuex.Store({
     modules: {
-      devicesInfo
+      devicesInfo,
+      userCookies
     },
     state,
     getters,

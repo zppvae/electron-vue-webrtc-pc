@@ -1,7 +1,6 @@
-import { app, BrowserWindow, Menu } from 'electron' // 从electron引入app和BrowserWindow
+import { app, BrowserWindow, Menu, dialog, Notification, ipcMain } from 'electron'
 import pkg from '../../package.json'
-const path = require('path')
-const url = require('url')
+
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -10,83 +9,30 @@ if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
-let mainWindow
+let mainWindow;
 const winURL = process.env.NODE_ENV === 'development'
-  ? `http://localhost:9080` // 开发模式的话走webpack-dev-server的url
+  ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
-// 创建窗口
 function createWindow () {
   /**
    * Initial window options
    */
-  const options = {
-    height: 600, // 高
+  mainWindow = new BrowserWindow({
+    height: 563,
     useContentSize: true,
-    width: 1000, // 宽
-    // backgroundColor: '#EDF4F5',
-    // title: 'SVOC Webrtc', // 窗口的默认标题
-    // show: false,
-    // frame: true,
-    center: true,
-    webPreferences: {
-      // backgroundThrottling: false
-      webSecurity: false
-    }
-  }
-  // 针对windows平台做出不同的配置
-  if (process.platform === 'win32') {
-    options.show = true; // 创建即展示
-    // options.frame = false; // 创建一个framelessc窗口
-    options.backgroundColor = '#3f3c37';
-  }
-  // 创建一个窗口
-  mainWindow = new BrowserWindow(options)
+    width: 1000
+  })
 
-  // 加载窗口的URL -> 来自renderer进程的页面
-  // mainWindow.loadURL(winURL)
-  mainWindow.loadURL(url.format({
-      pathname: path.join(__dirname, 'index.html'),
-      protocol: 'file:',
-      slashes: true
-  }))
+  mainWindow.loadURL(winURL)
+
+  // 打开开发工具页面
+  // mainWindow.webContents.openDevTools({mode: "right"})
 
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-
-  // 打开开发工具页面
-  mainWindow.webContents.openDevTools({mode: "right"})
-
-  global.sharedObject = {
-      mainurl: winURL,
-      nodeenv: process.env.NODE_ENV,
-      name:"lixd"
-  }
-
 }
-if (process.platform === 'win32') {
-  app.setAppUserModelId(pkg.build.appId)
-}
-// app准备好的时候触发创建窗口
-app.on('ready', ()=>{
-  createWindow();
-  createMenu();
-})
-
-// 所有窗口都关闭的时候触发
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') { // 当操作系统不是darwin（macOS）的话
-    app.quit() // 退出应用
-  }
-})
-
-// （仅macOS）当应用处于激活状态时
-app.on('activate', () => {
-  if (mainWindow === null) {
-    createWindow()
-  }
-})
 
 // 创建菜单
 function createMenu() {
@@ -102,36 +48,37 @@ function createMenu() {
         { role: 'paste' },
         { role: 'pasteandmatchstyle' },
         { role: 'delete' },
-        { role: 'selectall' }
+        { role: 'selectall' },
+        {
+          label: '关于我们',
+          click () {
+            dialog.showMessageBox({
+              title: 'SVOC',
+              message: 'SVOC云视频',
+              detail: `云起融通一直致力于运用领先的技术手段，为全球政企客户提供顶尖的全融合统一通讯云平台以及音视频增值业务解决方案。\nVersion: ${pkg.version}\nAuthor: ${pkg.author}\nCopyright © 2019 北京云起融通科技有限公司版权所有.`
+            })
+          }
+        },
+        {
+          label: '了解更多',
+          click () {
+            require('electron').shell.openExternal('https://vip.svocloud.com')
+          }
+        }
       ]
     },
     {
       label: 'View',
       submenu: [
-        { role: 'reload' },
-        { role: 'toggledevtools' },
-        { type: 'separator' },
-        { role: 'resetzoom' },
-        { role: 'zoomin' },
-        { role: 'zoomout' },
-        { type: 'separator' },
-        { role: 'togglefullscreen' }
-      ]
-    },
-    {
-      role: 'window',
-      submenu: [
-        { role: 'minimize' },
-        { role: 'close' }
-      ]
-    },
-    {
-      role: 'help',
-      submenu: [
+        { role: 'reload', label: '重新加载' },
+        { role: 'toggledevtools', label: '开发者工具'},
+        { role: 'togglefullscreen', label: '全屏' },
         {
-          label: 'Learn More',
-          click () { require('electron').shell.openExternal('https://vip.svocloud.com') }
-        }
+            label: '退出',
+            click () {
+                app.quit()
+            }
+        },
       ]
     }
   ]
@@ -165,45 +112,55 @@ function createMenu() {
     )
 
     // Window menu
-    template[3].submenu = [
-      { role: 'close' },
-      { role: 'minimize' },
-      { role: 'zoom' },
-      { type: 'separator' },
-      { role: 'front' }
-    ]
+    // template[3].submenu = [
+    //   { role: 'close' },
+    //   { role: 'minimize' },
+    //   { role: 'zoom' },
+    //   { type: 'separator' },
+    //   { role: 'front' }
+    // ]
   }
 
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu);
 }
 
-/** 菜单 **/
-// const createMenu = () => {
-//   if (process.env.NODE_ENV !== 'development') {
-//     const template = [{
-//       label: 'Edit',
-//       submeny: [
-//         { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
-//         { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
-//         { type: 'separator' },
-//         { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
-//         { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
-//         { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
-//         { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' },
-//         {
-//           label: 'Quit',
-//           accelerator: 'CmdOrCtrl+Q',
-//           click () {
-//             app.quit()
-//           }
-//         }
-//       ]
-//     }]
-//     const menu = Menu.buildFromTemplate(template);
-//     Menu.setApplicationMenu(menu);
-//   }
-// }
+// 退出登录
+ipcMain.on('logout-dialog', function (event) {
+    const options = {
+        type: 'info',
+        title: '退出',
+        message: "您确定要退出吗？",
+        buttons: ['确定', '取消']
+    }
+    dialog.showMessageBox(options, function (index) {
+        event.sender.send('logout-dialog-selection', index)
+    })
+})
+
+// 错误消息
+ipcMain.on('open-error-dialog', function (event) {
+    dialog.showErrorBox('错误', '这是一条错误消息');
+})
+
+
+
+app.on('ready', ()=>{
+    createWindow();
+    createMenu();
+})
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
+
+app.on('activate', () => {
+  if (mainWindow === null) {
+    createWindow()
+  }
+})
 
 /**
  * Auto Updater

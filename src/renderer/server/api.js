@@ -1,7 +1,7 @@
 // import axios from 'axios';
 import store from '../store/index.js';
 import { common } from "../util/common.js";
-import Cookie from "../util/elcookie";
+// import Cookie from "../util/elcookie.js";
 import { post, get, patch, put, _delete } from './axios';
 
 
@@ -33,14 +33,20 @@ export const conferenceApi = {
           // $cookies.set('uc_refresh_token', data.refresh_token, data.expires_in);
           // $cookies.set('uc_expires_in', data.expires_in, data.expires_in);
 
-          Cookie.setCookie('webRtcAddress', data.webRtcAddress, data.expires_in);
-          Cookie.setCookie('JwtToken', data.jwtToken, data.expires_in);
-          Cookie.setCookie('uc_access_token', data.access_token, data.expires_in);
-          Cookie.setCookie('uc_refresh_token', data.refresh_token, data.expires_in);
-          Cookie.setCookie('uc_expires_in', data.expires_in, data.expires_in);
+          const _data = [
+            {'name': 'webRtcAddress', 'value': data.webRtcAddress},
+            {'name': 'JwtToken', 'value': data.jwtToken},
+            {'name': 'uc_access_token', 'value': data.access_token},
+            {'name': 'uc_refresh_token', 'value': data.refresh_token},
+            {'name': 'uc_expires_in', 'value': data.expires_in}
+          ]
+          _data.forEach((item)=>{
+            store.dispatch('userCookies/asynSetCookies', item)
+          })
           
-          localStorage.setItem("uc_loginData", JSON.stringify(data));
-
+          common.setLocstorage('uc_access_token', data.access_token);
+          common.setLocstorage('uc_loginData', data);
+          // localStorage.setItem("uc_loginData", JSON.stringify(data));
           resolve(data)
         }
       })
@@ -56,7 +62,10 @@ export const conferenceApi = {
     .then(res => {
       let {code, data} = res;
       if(code === 200) {
-        $cookies.set('uc_access_token', data.access_token, data.expires_in);
+        // $cookies.set('uc_access_token', data.access_token, data.expires_in);
+        
+        common.setLocstorage('uc_access_token', data.access_token)
+        store.dispatch('userCookies/asynSetCookies', {name: 'uc_access_token',value: data.access_token})
       }
     })
   },
@@ -85,7 +94,10 @@ export const conferenceApi = {
     .then(res => {
       let {code, data} = res;
       if(code === 200) {
-        $cookies.set('turnServer', data);
+        // $cookies.set('turnServer', data);
+        common.setLocstorage('turnServer', data)
+        store.dispatch('userCookies/asynSetCookies', {name: 'turnServer',value: data})
+
       }
     })
     .catch(error => {
@@ -97,8 +109,10 @@ export const conferenceApi = {
       this.$get(`/uc/toWebRTCIndex`)
       .then(res => {
         let {data} = res;
-        $cookies.set('webRtcAddress', data.webRtcAddress);
-        $cookies.set('JwtToken', data.JwtToken);
+        // $cookies.set('webRtcAddress', data.webRtcAddress);
+        // $cookies.set('JwtToken', data.JwtToken);
+        store.dispatch('userCookies/asynSetCookies', {name: 'webRtcAddress', value: data.webRtcAddress})
+        store.dispatch('userCookies/asynSetCookies', {name: 'JwtToken', value: data.JwtToken})
         resolve(data)
       })
       .catch(error => {

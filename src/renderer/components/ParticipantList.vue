@@ -43,9 +43,9 @@
                 </ul>
               </div>
             </el-popover>
-            
+
           </div>
-          
+
         </div>
       </div>
     </el-card>
@@ -96,10 +96,10 @@
 
         return _participantsList;
       },
-      
+
     },
     methods: {
-      
+
       /** 会控 **/
       // 静音/解除静音
       participantMute(participant) {
@@ -113,10 +113,10 @@
         }
         conferenceApi.setParticipantMute(this.cid, participant.puuid, _type)
         .then(res => {
-          this.Hint(_type ? '静音成功' : '解除静音成功', 'success');
+          this.$notification('成功', _type ? '静音成功' : '解除静音成功');
         })
         .catch(error => {
-          this.Hint('设置失败', 'error');
+          this.$notification('失败', '设置失败');
         })
       },
       // 设置主讲人/取消主讲人
@@ -129,10 +129,10 @@
           }else if(_role === 4002){
             participant.role = 4001
           }
-          this.Hint(_role === 4002 ? '设置主讲人成功' : '取消主讲人成功', 'success');
+          this.$notification('成功', _role === 4002 ? '设置主讲人成功' : '取消主讲人成功');
         })
         .catch(error => {
-          this.Hint('设置失败', 'error');
+          this.$notification('失败', '设置失败');
         })
       },
       // 呼叫参会者
@@ -140,10 +140,10 @@
         const _userId = participant.userId;
         conferenceApi.dialUsers(this.cid, _userId)
         .then(res => {
-          this.Hint('呼叫成功', 'success');
+          this.$notification('呼叫', '呼叫成功');
         })
         .catch(error => {
-          this.Hint('呼叫失败', 'error');
+          this.$notification('呼叫', '呼叫失败');
         })
       },
       // 挂断参会者
@@ -151,10 +151,10 @@
         let _puuid = participant.puuid;
         conferenceApi.participantDisconnect(this.cid, _puuid)
         .then(res => {
-          this.Hint('挂断成功', 'success');
+          this.$notification('挂断', '挂断成功');
         })
         .catch(error => {
-          this.Hint('挂断失败', 'error');
+          this.$notification('挂断', '挂断失败');
         })
       }
     },
@@ -180,12 +180,12 @@
     color: #fff;
     width: 300px;
   }
-  .box-card{
+  .side-bar .el-card.box-card{
     background: transparent;
     color: #fff;
     border: none;
   }
-  
+
   .list-item{
     padding: 10px 0;
   }
@@ -193,11 +193,11 @@
   .participant-list{
     display: inline-block;
     vertical-align: middle;
-    
+
   }
   .participant-list .list-detail{
     display: block;
-    
+
   }
   .participant-list .list-detail i.participant-state{
     display: inline-block;
@@ -230,7 +230,7 @@
     color:#fff;
     pointer-events: none;
   }
-  
+
   .avatar{
     display: inline-block;
   }
@@ -285,5 +285,5 @@
   .operation ul li.disabled:hover{
     background-color: transparent;
   }
-  
+
 </style>

@@ -62,7 +62,6 @@
 
 <script>
 import { common } from "../../util/common.js";
-
 export default {
   name: "loginPage",
   data() {
@@ -92,10 +91,10 @@ export default {
           if (code == 200) {
             //保存user信息
             common.loginSetData(data);
-            this.Hint('登录成功', 'success');
+            this.$notification('登录','登录成功');
             this.$store.dispatch('asyncLoginData', data);
             this.$store.commit("setIsLoggedIn", true);
-            
+
             that.loginMsg = "";
             // 登录成功后返回到index
             this.$router.push("/index");
@@ -108,7 +107,7 @@ export default {
           // this.Hint(msg, 'error');
         });
     },
-    
+
     /** 获取已登录用户信息 */
     getUserMessage() {
       this.$get(`/uc/user/${this.loginData.userId}`)
@@ -133,7 +132,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .loginForm {
   margin: 0 auto;
   margin-top: 50px;
@@ -166,4 +165,5 @@ export default {
   padding-top: 20px;
   text-align: center;
 }
+</style>
 </style>

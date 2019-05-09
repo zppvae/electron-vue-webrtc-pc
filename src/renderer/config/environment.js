@@ -1,3 +1,4 @@
+import store from '../store/index';
 export const environment = {
-    apiBase: 'https://pre.svocloud.com'
+    apiBase: 'https://dev.svocloud.cn'
 }

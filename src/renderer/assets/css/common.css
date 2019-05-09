@@ -35,8 +35,8 @@ html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pr
 
 /* 自定义$message 的样式 */
 .messagebox{
-  background: #0000006b !important;
-  /*color: #f2f2f2;*/
-  border: 1px solid #e0e0e0 !important;
-  min-width: 200px !important;
+  background: #0000006b;
+  color: #f2f2f2;
+  border: 1px solid #e0e0e0;
+  min-width: 200px;
 }

@@ -26,6 +26,7 @@ import JoinMeeting from "@/components/JoinMeeting.vue";
 import getUserMedia from '../util/webrtc/getUserMedia';
 import getMediaDevices from '../util/webrtc/getMediaDevices'
 import { mapState, mapGetters, mapActions } from 'vuex';
+//import {boxNotification} from '../config/messagebox'
 
 export default {
   name: "index",
@@ -72,19 +73,19 @@ export default {
       // const devices = this.$store.getters.getDevices;
       const _localVideo = document.querySelector("#localVideo");
       let constraints;
-      
+
       if(devices) {
         constraints = {
-          video: { deviceId: devices.videoSource || ''}, 
+          video: { deviceId: devices.videoSource || ''},
           audio: { deviceId: devices.audioSource || '' }
         };
       }else {
         constraints = {
-          video: { deviceId: ''}, 
+          video: { deviceId: ''},
           audio: { deviceId: '' }
         }
       }
-      
+
       getUserMedia(constraints)
       .then((stream)=>{
         this.localStream = stream;
@@ -162,10 +163,12 @@ export default {
     console.log("index加载完成");
     this.getMediaDevicesFn();
     this.getUserMediaFn();
+//    boxNotification('离开会议ddd','index加载完成')
   }
+
 };
 </script>
-<style>
+<style scoped>
 .main {
   position: fixed;
   height: 100%;
@@ -174,7 +177,7 @@ export default {
 }
 .localvideo{
   width: 100%;
-  /* height: 100%; */
+  height: 100%;
 }
 
 .JoinForm {

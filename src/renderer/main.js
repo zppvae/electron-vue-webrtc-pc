@@ -1,18 +1,18 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VueCookies from 'vue-cookies'
+import store from './store'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 // import Electron from 'electron'
 import App from './App.vue'
 import router from './router'
-import store from './store'
 import 'font-awesome/css/font-awesome.min.css'
 import { post, get, patch, put, _delete } from './server/axios'
 import * as filters from './filters'
 import * as directives from './directives'
+import { Hint, boxNotification } from './config/messagebox';
 
-if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 
 //定义全局变量
 Vue.prototype.$post = post;
@@ -25,6 +25,10 @@ Vue.use(VueCookies)
 Vue.use(VueAxios, axios)//axios
 // Vue.use(Electron)
 
+Vue.prototype.Hint = Hint;
+Vue.prototype.$notification = boxNotification;
+
+if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 
 // elementUI
 import 'element-ui/lib/theme-chalk/index.css';
@@ -33,15 +37,16 @@ import ElementUI from 'element-ui';//全局-需取消配置.babelrc
 import { Message } from 'element-ui';
 Vue.use(ElementUI);
 // 重写$message消息提示方法
-Vue.prototype.Hint = (message, type) => {
-  Message({
-    message,
-    type,
-    center: true,
-    // iconClass: "noicon",
-    customClass: 'messagebox'
-  })
-}
+// Vue.prototype.Hint = (message, type) => {
+//   Message({
+//     message,
+//     type,
+//     center: true,
+//     // iconClass: "noicon",
+//     customClass: 'messagebox'
+//   })
+// }
+
 
 Vue.use(Vuex)
 

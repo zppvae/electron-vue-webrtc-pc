@@ -50,6 +50,8 @@
 // import Login from "./Login.vue";
 import VueCookies from "vue-cookies";
 import { common } from "../util/common.js";
+
+
 export default {
   name: "Sidebar",
   props: {},
@@ -66,7 +68,7 @@ export default {
       return this.$store.getters.getIsLoggedIn
     }
   },
-  
+
   methods: {
     settingShow() {
       this.setting = true;
@@ -106,16 +108,13 @@ export default {
 
     /** 退出登录 */
     logoutFn() {
-      this.$confirm("您确定要退出吗？", "提示", {
-        closeOnClickModal: false,
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-      .then(() => {
-        this.sureLogoutFn();
-      })
-      .catch(() => {});
+        const _this = this;
+        this.$electron.ipcRenderer.send('logout-dialog')
+        this.$electron.ipcRenderer.on('logout-dialog-selection', function (event, index) {
+          if(index === 0) {
+            _this.sureLogoutFn();
+          }
+        })
     },
     // 确定退出登录
     sureLogoutFn() {
@@ -124,7 +123,7 @@ export default {
           let { code } = res;
           if (code == 200) {
             common.deletAllLoginData()//清除所有登录信息
-            this.Hint('退出成功', 'success');
+            this.$notification('退出', '退出登录成功');
             this.$store.commit("setIsLoggedIn", false);
             this.$store.dispatch('asyncLoginData', {});
             // window.location.reload();
@@ -157,7 +156,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
 ul {
   list-style-type: none;
 }

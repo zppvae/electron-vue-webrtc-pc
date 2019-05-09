@@ -14,8 +14,8 @@ axios.defaults.timeout = 10000;
 
 // 请求拦截
 axios.interceptors.request.use(function (config) {
-  
-  // config.baseURL = store.getters.getServerAddress + '/appapi';
+
+  config.baseURL = store.getters.getServerAddress + '/appapi';
   config.headers.terminalType = 'web';
   config.headers.Authorization = tokenService.getToken();
 

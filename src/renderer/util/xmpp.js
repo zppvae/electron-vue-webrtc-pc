@@ -46,7 +46,7 @@ export const xmpp = {
         isJoinRoom = isJoin;
         _this.loginConnect();
     },
-    
+
     // 连接状态改变的事件
     onConnect(status) {
         if (status == Strophe.Status.AUTHFAIL) {
@@ -202,6 +202,7 @@ export const xmpp = {
         // this.isKicked = true;
         if (XMPPData.connected) {
             XMPPData.connection.disconnect();
+            XMPPData.connection = null;
         }
     }
 }

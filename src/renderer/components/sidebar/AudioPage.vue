@@ -75,11 +75,6 @@ export default {
  };
 </script>
 
-<style>
-  .sidebar-left{
-    margin-left: 1rem;
-  }
-  .sidebar-left span{
-    margin: 0 1rem;
-  }
+<style scoped>
+  
 </style>

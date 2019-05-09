@@ -95,7 +95,7 @@
   }
 </script>
 
-<style>
+<style scoped>
 /* 工具操作部分 */
 .tool-bar-center{
   text-align: center;

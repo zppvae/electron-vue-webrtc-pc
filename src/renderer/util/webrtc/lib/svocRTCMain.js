@@ -10,10 +10,9 @@ let tool = require('./tool').default;
 var support = RTCSupport;
 var Call = RTCCall;
 var RTMP = RTMPCall;
-var turnServer = JSON.parse(tool.getCookieObj('turnServer')) || {turnurl:'', name: '', pwd: ''};
-
 function SvocRtc() {
   var self = this;
+  var turnServer = JSON.parse(localStorage.getItem('turnServer')) || { turnurl:'', name: '', pwd: '' };
   self.state = 'IDLE';
   self.conference = null;
   self.conference_uri = '';
@@ -187,7 +186,7 @@ SvocRtc.prototype.makeCall = function (node, conf, name, pin, bw, call_type, fla
   self.pin = pin;
   self.call_type = call_type;
   self.flash = flash;
-  
+
   if (bw) {
       self.bandwidth_in = parseInt(bw);
       self.bandwidth_out = self.bandwidth_in;

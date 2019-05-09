@@ -4,6 +4,29 @@
   </div>
 </template>
 
+<script>
+
+// import store from './store.js';
+export default {
+  name:'app',
+  data() {
+    return {
+      key: 'value'
+    }
+  },
+  methods: {
+    fn() {
+
+    }
+  },
+  mounted () {
+    if(this.$store.state.loginData){
+      // xmpp.init();
+    }
+
+  },
+};
+</script>
 <style>
 #app {
   color: #fff;
@@ -55,26 +78,3 @@ i.ivu-icon-ios-close:before{
     padding: 5px;
   }
 </style>
-<script>
-
-// import store from './store.js';
-export default {
-  name:'app',
-  data() {
-    return {
-      key: 'value'
-    }
-  },
-  methods: {
-    fn() {
-      
-    }
-  },
-  mounted () {
-    if(this.$store.state.loginData){
-      // xmpp.init();
-    }
-    
-  },
-};
-</script>

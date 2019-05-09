@@ -50,7 +50,10 @@ export default {
   computed: {
     ...mapGetters('devicesInfo', {
       _divecesIds: 'getDevices'
-    })
+    }),
+    ...mapGetters('userCookies', {
+      getcookies: 'getAllCookies'
+    }),
     
   },
   watch: {
@@ -99,7 +102,7 @@ export default {
     handleJoinMeetingFn() {
       // const nodeServer = this.$store.state.serverAddress.split('//')
       // this.meetingInfoData.host = nodeServer[1];
-      
+
       // 当前选择到带宽值
       this.meetingInfoData.bw = this.$store.getters.getResolution;
       
@@ -172,7 +175,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .joinMeeting{
   height: 100%;
   background: linear-gradient(to bottom, #23384e, #373737);

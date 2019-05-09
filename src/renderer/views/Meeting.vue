@@ -5,12 +5,12 @@
         <!-- header -->
         <div class="meeting-bar header-bar">
           <el-row type="flex" class="row-bg" justify="space-around">
-            <el-col :span="6">
+            <el-col :sm="6" :md="4">
               <div class="conference-msg">
                 <el-popover
                   placement="top-start"
                   trigger="hover">
-                  <span slot="reference">{{conferenceDetail.conference.conferenceName}} <i class="icon-arrow-right" style="font-size:14px;"></i></span> 
+                  <span slot="reference">{{conferenceDetail.conference.conferenceName}} <i class="icon-arrow-right" style="font-size:14px;"></i></span>
                   <div>
                     <p>会议号：{{ conferenceDetail.conference.vmrNumber }}</p>
                     <p>密  码：{{ conferenceDetail.conference.visitorPwd }}</p>
@@ -19,21 +19,21 @@
                 </el-popover>
               </div>
             </el-col>
-            <el-col :span="6">
+            <el-col :sm="10" :md="16" >
               <div class="conference-status">
                 <el-tooltip class="item" effect="light" content="入会时长" placement="bottom">
                   <span>{{meetingTimer.timeLong}}</span>
                 </el-tooltip>
                 <span>|</span>
-                <span class="network" @click="getMediaStatistics()"> 
-                  <i class=" icon-conference-network" :class="{'network-good':percentageLost<=10, 'network-general': percentageLost>1 && percentageLost<20, 'network-bad':percentageLost>=20}"></i>
+                <span class="network" @click="getMediaStatistics()">
+                  <i class=" icon-conference-network" :class="{'network-good':percentageLost<=10, 'network-general': percentageLost>10 && percentageLost<20, 'network-bad':percentageLost>=20}"></i>
                   <span v-if="percentageLost<=10">网络良好</span>
-                  <span v-if="percentageLost>1 && percentageLost<20">网络一般</span>
+                  <span v-if="percentageLost>10 && percentageLost<20">网络一般</span>
                   <span v-if="percentageLost>=20">网络不佳</span>
                 </span>
               </div>
             </el-col>
-            <el-col :span="6">
+            <el-col :sm="4" :md="3" >
               <div class="">
                 <!-- 挂断 -->
                 <a href="javascript:;" class="tool-item disconnect-btn" @click="disconnectDialog=true">
@@ -43,21 +43,21 @@
             </el-col>
           </el-row>
         </div>
-        
+
         <!-- main -->
         <div class="conn-main">
           <!-- 本地画面 -->
           <div class="right-video local-video">
             <video id="localVideo" class="" autoplay />
           </div>
-          
+
           <!-- 远端画面 -->
           <div class="main-video remote-video">
             <video v-show="!spinnerTimer" id="remoteVideo" class="" autoplay  v-rtcVolume="$store.getters.getLocalVolume" />
 
             <img v-show="spinnerTimer" class="presentation-image" src="../assets/img/video-spinner.svg" />
           </div>
-          
+
 
           <!-- 双流画面 -->
           <!-- todo -->
@@ -71,18 +71,18 @@
 
       <!-- 参会者列表 -->
       <div class="side-bar" :class="{ 'hide-sidebar': !sideBar}">
-        <ParticipantList /> 
+        <ParticipantList />
       </div>
 
       <!-- 挂断 弹出框 -->
       <el-dialog
         title="挂断"
         :visible.sync="disconnectDialog"
-        width="30%">
+        width="400px">
         <span>结束会议之后，参会人员将被强制退出会议。</span>
         <span slot="footer" class="dialog-footer">
           <el-button @click="disconnectDialog = false">取 消</el-button>
-          <el-button type="primary" @click="closeConference()">结束会议</el-button>
+          <el-button v-if="havePermission"  type="primary" @click="closeConference()">结束会议</el-button>
           <el-button type="primary" @click="disconnect()">离开会议</el-button>
         </span>
       </el-dialog>
@@ -90,7 +90,9 @@
       <!-- 网络状态 弹出框 -->
       <el-dialog
         :visible.sync="statisticsDialog"
-        width="38%"
+        width="500px"
+        :modal="false"
+        custom-class='statics-dialog'
         >
         <div >
           <el-row>
@@ -125,6 +127,7 @@ import rtc from '../util/webrtc/lib/svocRTC';
 import { common } from '../util/common';
 import { setInterval, clearInterval } from 'timers';
 import { conferenceApi } from '../server/api';
+import { xmpp } from '../util/xmpp';
 
 export default {
   name: "meeting",
@@ -132,8 +135,8 @@ export default {
     return {
       disconnectDialog: false, // 挂断模态框
       statisticsDialog: false, // 会议状态模态框
-      // cid
-      cid: '',
+      havePermission: false,
+      cid: '', // cid
       // 入会时长
       meetingTimer: {
         timerInterval: null,
@@ -162,6 +165,11 @@ export default {
     // 从状态管理器中获取会议信息
     conferenceDetail: function () {// 获取getters
       const _conferenceRole =this.$store.getters.getConferenceRoleData;
+      if(_conferenceRole.conferenceRole === 0) {
+          this.havePermission = false;
+      }else{
+          this.havePermission = true;
+      }
       const _conferenceDetail = this.$store.getters.getConferenceData;
       this.cid = _conferenceRole.cid;
       return _conferenceDetail;
@@ -194,8 +202,9 @@ export default {
     disconnect() {
       rtc.disconnect();
       this.disconnectDialog = false;
+      xmpp.disConnectXmpp();
+      clearInterval(this.percentageLostInterval);
       this.$router.push('/index');
-      // xmpp.disConnectXmpp();
       // window.location.reload();
     },
 
@@ -213,7 +222,7 @@ export default {
         this.meetingTimer.backM = 0;
         this.meetingTimer.backH++;
       }
-      
+
       return common.addZero(this.meetingTimer.backH) + ':' + common.addZero(this.meetingTimer.backM) + ':' + common.addZero(this.meetingTimer.backS)
     },
     // 获取丢包率
@@ -244,7 +253,7 @@ export default {
       }
     }
   },
-  
+
   mounted() {
     console.log("Meeting加载完成");
     this.meetingTimer.timerInterval = setInterval(() => {
@@ -254,7 +263,10 @@ export default {
   destroyed() {
     clearInterval(this.meetingTimer.timerInterval);
     clearInterval(this.statisticsInterval);
-    clearInterval(this.percentageLostInterval);
+    if(this.percentageLostInterval) {
+      clearInterval(this.percentageLostInterval);
+      this.percentageLostInterva = null;
+    }
   }
 };
 </script>
@@ -268,7 +280,7 @@ export default {
   color: #FAFAFA;
   background-color: rgb(163, 209, 240);
   text-align: center;
-  overflow: hidden; 
+  overflow: hidden;
   opacity: 1;
   /* height: 100%;
   width: 100%; */
@@ -311,7 +323,7 @@ export default {
   bottom: 0;
   left: 0;
 }
-/** header **/ 
+/** header **/
 .conference-msg{
   float: left;
   font-size: 16px;
@@ -320,7 +332,7 @@ export default {
 .disconnect-btn{
   float: right;
   margin: 10px 0;
-  
+
 }
 .disconnect-btn i.tool-icon{
   font-size: 32px;
@@ -341,7 +353,13 @@ export default {
 .network i.network-general{
   color: #f7e83b;
 }
-
+div.el-dialog.statics-dialog{
+  background: rgba(0, 0, 0, 0.68);
+  box-shadow: 0 0 5px #f2f2f2;
+}
+.statics-dialog .el-dialog__body{
+  color :#f2f2f2;
+}
 
 /* 视频主体部分 */
 .conn-main{
@@ -398,7 +416,7 @@ export default {
   width: 20%;
   /* width: 240px;
   height: 210px; */
-  background-color: transparent; 
+  background-color: transparent;
   z-index: 999;
 }
 .right-video video {

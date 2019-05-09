@@ -4,7 +4,7 @@
       return document.getElementById(idName);
     },
     init: function(idName,stream) {
-      this.bindEvent_srcObject(idName,stream);
+      this.bindEvent_Src(idName,stream);
     },
     bindEvent_srcObject: function(idName, stream) {
       var dom = this.getIdDom(idName);
